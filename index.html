@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leadership Development Needs Assessor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a0000;
+        }
+        .main-gradient-bg {
+            background: radial-gradient(circle at top, #500000 0%, #1a0000 40%);
+        }
+        .card-bg {
+            background-color: rgba(12, 5, 5, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .info-card {
+             background-color: rgba(41, 23, 23, 0.3); /* Lighter background */
+             border: 1px solid rgba(255, 255, 255, 0.1);
+             border-top: 2px solid #7c0a0a;
+             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .interactive-card {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 25px rgba(255, 100, 100, 0.15), 0 5px 20px rgba(0,0,0,0.3);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #6b0000 0%, #8a0f0f 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        .option-btn {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .option-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        .option-btn.selected {
+            background-color: rgba(74, 222, 128, 0.15);
+            border-color: rgba(74, 222, 128, 0.8);
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.3);
+            transform: scale(1.02);
+        }
+        .feedback-modal-bg {
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .feedback-correct {
+            border-left: 4px solid #34d399;
+        }
+        .feedback-incorrect {
+            border-left: 4px solid #f87171;
+        }
+        .prose-custom {
+            color: #d1d5db;
+        }
+        .prose-custom h3 {
+            color: #f9fafb;
+            font-size: 1.125rem;
+            margin-bottom: 0.75rem;
+        }
+        .prose-custom p {
+            margin-bottom: 1rem;
+        }
+        .prose-custom strong {
+            color: #f3f4f6;
+        }
+        .prose-custom ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .prose-custom ul > li {
+            position: relative;
+            padding-left: 1.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .prose-custom ul > li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: #7c0a0a;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="text-slate-200">
+
+    <div id="app" class="min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 main-gradient-bg">
+        
+        <!-- Start Screen -->
+        <div id="start-screen" class="text-center">
+            <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">Leadership Development Needs Assessor</h1>
+            <p class="text-lg sm:text-xl text-slate-300 mb-8 max-w-2xl mx-auto">Analyze complex scenarios to assess individual and organizational development needs.</p>
+            <button id="start-btn" class="btn-primary text-white font-bold py-3 px-8 rounded-lg text-lg">Start Assessment</button>
+        </div>
+
+        <!-- Assessment Screen -->
+        <div id="assessment-screen" class="hidden w-full max-w-6xl">
+            <div id="progress-bar" class="w-full bg-gray-800 rounded-full h-1.5 mb-4">
+                <div id="progress-bar-inner" class="bg-green-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <h2 id="scenario-title" class="text-center text-3xl sm:text-4xl font-bold text-white mb-8"></h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 sm:gap-8">
+                <!-- Left Column for Profile & Context -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="info-card rounded-xl p-6 prose prose-custom max-w-none">
+                        <h3>Individual Profile</h3>
+                        <div id="scenario-profile"></div>
+                    </div>
+                    <div class="info-card rounded-xl p-6 prose prose-custom max-w-none">
+                        <h3>Organizational Context</h3>
+                        <div id="scenario-context"></div>
+                    </div>
+                </div>
+
+                <!-- Right Column for Indicators & Decision -->
+                <div class="lg:col-span-3">
+                    <div class="card-bg interactive-card rounded-xl p-6 sm:p-8 h-full flex flex-col">
+                        <div class="prose prose-custom max-w-none mb-6">
+                            <h3>Development Indicators</h3>
+                            <div id="scenario-indicators"></div>
+                        </div>
+                        
+                        <div class="border-t border-slate-700 my-6"></div>
+
+                        <div class="mt-auto">
+                            <div class="text-center p-3 mb-4 rounded-lg bg-green-500 bg-opacity-10 border border-green-500 border-opacity-30">
+                                <p class="font-semibold text-green-300">Your turn: Review the scenario, then choose the best option below.</p>
+                            </div>
+                            <h3 class="text-xl font-semibold text-white mb-4">Assessment Decision</h3>
+                            <p id="decision-prompt" class="text-slate-300 mb-4"></p>
+                            <div id="options-container" class="space-y-3">
+                                <!-- Options will be injected here -->
+                            </div>
+                            <button id="submit-btn" class="btn-primary w-full mt-6 text-white font-bold py-3 px-6 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled>Submit Answer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Modal -->
+        <div id="feedback-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 feedback-modal-bg">
+            <div id="feedback-content" class="card-bg rounded-2xl p-6 sm:p-8 shadow-2xl w-full max-w-2xl transform transition-all duration-300 scale-95 opacity-0">
+                <h2 id="feedback-title" class="text-2xl font-bold mb-4"></h2>
+                <div id="feedback-text" class="text-slate-300 mb-6 prose prose-custom max-w-none"></div>
+                <button id="continue-btn" class="btn-primary w-full text-white font-bold py-3 px-6 rounded-lg">Continue</button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="hidden text-center">
+             <div class="card-bg rounded-2xl p-6 sm:p-8 shadow-2xl">
+                <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">Assessment Complete</h1>
+                <p class="text-lg sm:text-xl text-slate-300 mb-2">You correctly assessed:</p>
+                <p class="text-6xl font-bold text-green-400 mb-8"><span id="score">0</span> out of <span id="total">3</span></p>
+                <p class="text-slate-400 max-w-xl mx-auto mb-8">This tool helps practice distinguishing between horizontal skill gaps and vertical development opportunities, a key capability for senior leaders.</p>
+                <button id="restart-btn" class="btn-primary text-white font-bold py-3 px-8 rounded-lg text-lg">Try Again</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const scenarios = [
+            {
+                title: "Mid-Level Manager Development",
+                profile: `<p>A technically competent emergency manager is struggling with multi-agency coordination. They are frequently frustrated by a perceived "lack of cooperation" from other agencies.</p>`,
+                context: `<p>The organization has a strong technical culture with limited leadership development infrastructure.</p>`,
+                indicators: `
+                    <ul>
+                        <li><strong>Questioning Pattern:</strong> When describing coordination problems, the manager asks, "How do I get them to cooperate?" rather than, "What might we be missing about why coordination is difficult?"</li>
+                        <li><strong>Perspective-Taking:</strong> They focus only on their own agency's frustrations instead of exploring how other agencies experience coordination challenges.</li>
+                        <li><strong>Systems Awareness:</strong> They see coordination as an individual agency problem, not as a product of broader system dynamics.</li>
+                    </ul>
+                `,
+                decisionPrompt: "Based on the profile and organizational context, what is the most appropriate initial development step for this manager?",
+                options: [
+                    { text: "Enroll them in vertical development coaching to improve systems thinking.", isCorrect: false },
+                    { text: "Provide horizontal skills building in multi-agency coordination techniques.", isCorrect: true }
+                ],
+                feedback: {
+                    correct: "<p><strong>Correct.</strong> While the manager shows signs that a vertical development opportunity exists (a need for systems thinking), the immediate and practical first step is horizontal skills building. The manager's questioning pattern and limited perspective-taking indicate a foundational skills gap. Furthermore, the organization's limited development infrastructure cannot adequately support a complex vertical development journey at this time. Building tangible coordination skills provides immediate value and creates a foundation for future vertical growth once the organization is more prepared to support it.</p>",
+                    incorrect: "<p><strong>Not quite.</strong> While vertical development is the long-term goal, jumping directly to it is premature. The manager's current mindset ('How do I get them to cooperate?') and the organization's weak support for leadership development create a high risk of failure for advanced coaching. It's more effective to first build their horizontal skills (e.g., specific coordination techniques), which addresses the immediate performance issue and prepares them for more complex, vertical development later.</p>"
+                }
+            },
+            {
+                title: "Senior Leader Succession",
+                profile: `<p>An experienced leader is approaching retirement. Their identified successor is technically competent but struggles with building and maintaining key stakeholder relationships.</p>`,
+                context: `<p>The organization has limited formal succession planning and has historically relied on promoting individuals based on technical expertise.</p>`,
+                indicators: `
+                    <ul>
+                        <li><strong>Questioning Pattern:</strong> When facing stakeholder conflicts, the successor asks, "How do I handle these difficult people?" instead of, "What system dynamics might be creating these tensions?"</li>
+                        <li><strong>Perspective-Taking:</strong> They tend to focus on managing stakeholder behavior for the organization's advantage, rather than genuinely exploring stakeholder concerns.</li>
+                        <li><strong>Systems Awareness:</strong> They have not yet demonstrated a recognition of stakeholder relationships as part of larger political and organizational systems that require ongoing navigation.</li>
+                    </ul>
+                `,
+                decisionPrompt: "What is the most pressing development need for this successor to ensure a successful transition?",
+                options: [
+                    { text: "Focus on strategic thinking and perspective-taking development first.", isCorrect: true },
+                    { text: "Immediately begin systems-level leadership development.", isCorrect: false }
+                ],
+                feedback: {
+                    correct: "<p><strong>Correct.</strong> The successor's focus on 'handling difficult people' and managing behavior points to a need for a more sophisticated approach to stakeholder engagement. Developing their strategic thinking and, crucially, their perspective-taking capabilities is the foundational (horizontal) work required before they can effectively engage in higher-level, systems-oriented leadership. This approach addresses the core of their current struggle.</p>",
+                    incorrect: "<p><strong>Not quite.</strong> Systems-level leadership is the ultimate goal, but the successor isn't ready. Their current indicators show they are still operating from a person-centric, rather than a system-centric, viewpoint. Pushing them into systems-level development without first building their capacity for strategic thinking and genuine perspective-taking would be like asking them to run before they can walk.</p>"
+                }
+            },
+            {
+                title: "Organizational Change Leadership",
+                profile: `<p>A new leader is tasked with implementing significant organizational changes and is experiencing resistance from multiple departments.</p>`,
+                context: `<p>The organization has a change-resistant culture with a strong procedural orientation. 'The way we've always done it' is a powerful force.</p>`,
+                indicators: `
+                    <ul>
+                        <li><strong>Questioning Pattern:</strong> When facing resistance, they ask, "How do I overcome this resistance?" rather than, "What is this resistance telling us about our change approach and the organizational system?"</li>
+                        <li><strong>Perspective-Taking:</strong> They focus on convincing others that the change is necessary, instead of exploring why different groups might experience the change differently.</li>
+                        <li><strong>Systems Awareness:</strong> They view resistance as individual opposition rather than a symptom of a complex system challenge.</li>
+                    </ul>
+                `,
+                decisionPrompt: "Given the leader's approach and the organizational culture, what is the most effective development priority?",
+                options: [
+                    { text: "Provide foundational change management skills and tools.", isCorrect: true },
+                    { text: "Begin advanced development in complex change leadership.", isCorrect: false }
+                ],
+                feedback: {
+                    correct: "<p><strong>Correct.</strong> The leader's desire to 'overcome resistance' is a classic sign they need foundational change management skills (horizontal development). These skills provide structured approaches, tools, and communication strategies to navigate the human side of change within a resistant culture. This practical skill set is essential before they can graduate to the more abstract, adaptive work of complex change leadership.</p>",
+                    incorrect: "<p><strong>Not quite.</strong> While the situation is complex, the leader's current approach is not. They are viewing a complex problem through a simple lens ('overcoming resistance'). They first need the foundational tools of change management to understand stakeholder analysis, communication planning, and resistance diagnosis. Attempting advanced, adaptive leadership without this foundation would likely increase frustration and failure in a culture that is already change-resistant.</p>"
+                }
+            }
+        ];
+
+        // App state
+        let currentScenarioIndex = 0;
+        let score = 0;
+        let selectedOption = null;
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const assessmentScreen = document.getElementById('assessment-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const feedbackModal = document.getElementById('feedback-modal');
+        
+        const startBtn = document.getElementById('start-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const continueBtn = document.getElementById('continue-btn');
+        const restartBtn = document.getElementById('restart-btn');
+
+        const progressBarInner = document.getElementById('progress-bar-inner');
+
+        function init() {
+            startBtn.addEventListener('click', startAssessment);
+            submitBtn.addEventListener('click', handleSubmit);
+            continueBtn.addEventListener('click', handleContinue);
+            restartBtn.addEventListener('click', restartAssessment);
+        }
+
+        function startAssessment() {
+            currentScenarioIndex = 0;
+            score = 0;
+            startScreen.classList.add('hidden');
+            resultsScreen.classList.add('hidden');
+            assessmentScreen.classList.remove('hidden');
+            loadScenario(currentScenarioIndex);
+        }
+        
+        function restartAssessment() {
+            startAssessment();
+        }
+
+        function loadScenario(index) {
+            selectedOption = null;
+            submitBtn.disabled = true;
+            
+            const scenario = scenarios[index];
+            document.getElementById('scenario-title').textContent = `Scenario ${index + 1}: ${scenario.title}`;
+            document.getElementById('scenario-profile').innerHTML = scenario.profile;
+            document.getElementById('scenario-context').innerHTML = scenario.context;
+            document.getElementById('scenario-indicators').innerHTML = scenario.indicators;
+            document.getElementById('decision-prompt').textContent = scenario.decisionPrompt;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            scenario.options.forEach((option, i) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn w-full text-left p-4 rounded-lg';
+                button.textContent = option.text;
+                button.dataset.index = i;
+                button.addEventListener('click', handleOptionSelect);
+                optionsContainer.appendChild(button);
+            });
+            
+            updateProgressBar();
+        }
+
+        function handleOptionSelect(event) {
+            const allOptions = document.querySelectorAll('.option-btn');
+            allOptions.forEach(btn => btn.classList.remove('selected'));
+            
+            const selectedButton = event.currentTarget;
+            selectedButton.classList.add('selected');
+            
+            selectedOption = parseInt(selectedButton.dataset.index);
+            submitBtn.disabled = false;
+        }
+        
+        function updateProgressBar() {
+            const progress = ((currentScenarioIndex) / scenarios.length) * 100;
+            progressBarInner.style.width = `${progress}%`;
+        }
+
+        function handleSubmit() {
+            const scenario = scenarios[currentScenarioIndex];
+            const chosenOption = scenario.options[selectedOption];
+
+            const feedbackContent = document.getElementById('feedback-content');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackText = document.getElementById('feedback-text');
+
+            if (chosenOption.isCorrect) {
+                score++;
+                feedbackTitle.textContent = "Correct Assessment";
+                feedbackTitle.className = "text-2xl font-bold mb-4 text-green-400";
+                feedbackText.innerHTML = scenario.feedback.correct;
+                feedbackContent.classList.remove('feedback-incorrect');
+                feedbackContent.classList.add('feedback-correct');
+            } else {
+                feedbackTitle.textContent = "Incorrect Assessment";
+                feedbackTitle.className = "text-2xl font-bold mb-4 text-red-400";
+                feedbackText.innerHTML = scenario.feedback.incorrect;
+                feedbackContent.classList.remove('feedback-correct');
+                feedbackContent.classList.add('feedback-incorrect');
+            }
+
+            feedbackModal.classList.remove('hidden');
+            setTimeout(() => {
+                feedbackContent.classList.remove('scale-95', 'opacity-0');
+                feedbackContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function handleContinue() {
+            const feedbackContent = document.getElementById('feedback-content');
+            feedbackContent.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                feedbackModal.classList.add('hidden');
+                currentScenarioIndex++;
+                updateProgressBar(); // Update progress bar after advancing
+                if (currentScenarioIndex < scenarios.length) {
+                    loadScenario(currentScenarioIndex);
+                } else {
+                    // Final progress bar update before showing results
+                    progressBarInner.style.width = `100%`;
+                    setTimeout(showResults, 500); // Give time for animation
+                }
+            }, 300);
+        }
+
+
+
+        function showResults() {
+            assessmentScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+            document.getElementById('score').textContent = score;
+            document.getElementById('total').textContent = scenarios.length;
+        }
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
